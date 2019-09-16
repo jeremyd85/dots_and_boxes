@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 
 
 class Board:
@@ -6,17 +7,19 @@ class Board:
     def __init__(self, width=1, height=1):
         self.width = width
         self.height = height
-        self.grid = None
+        self._grid = None
         self.setup()
+
+    @property
+    def grid(self):
+        return copy.deepcopy(self._grid)
 
     # TODO make index operations???
 
     def setup(self):
         # Make the grid state of a new game
-        self.grid = np.full((self.width, self.height), np.inf)
+        self._grid = np.full((self.width, self.height), np.inf)
 
-    def update(self):
-        # Update a grid based on external changes on the board's state
-        # (Not sure if it will be useful)
-        pass
+    def update(self, new_grid):
+        self._grid = new_grid
 
