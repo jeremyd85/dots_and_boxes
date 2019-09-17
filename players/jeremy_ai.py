@@ -1,4 +1,4 @@
-from game.pencil import Pencil
+from game import Pencil
 import random
 
 class DestroyerOfJesse(Pencil):
