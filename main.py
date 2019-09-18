@@ -1,88 +1,91 @@
-from game import Paper
 from players import *
+from game import Paper
 import random
+import json
+import os
 
 
 class Arena:
 
-    def __init__(self, players, size=(7, 7)):
-        self.width = size[0]
-        self.height = size[1]
+    BASEDIR = 'saved_games'
+
+    def __init__(self, players, arena_name, size=(7, 7)):
         self.active_players = players
-        random.shuffle(self.active_players)
         self.inactive_players = []
         self.rounds = []
-        self.round_num = 1
+        self.arena_name = arena_name
+        self.width = size[0]
+        self.height = size[1]
+        self.round_num = 0
+        random.shuffle(self.active_players)
 
-    def create_round(self):
-        matches = []
-        if len(self.active_players) == 1:
-            return self.active_players
-        num_matches = len(self.active_players) // 2 if len(self.active_players) % 2 == 0 else 1
-        for match_num in range(num_matches):
-            match = [self.active_players[match_num], self.active_players[:-match_num]]
-            matches.append(match)
-        self.rounds.append(matches)
-        return matches
-
-    def play_match(self, match):
-        p1 = match[0]
-        p2 = match[1]
+    def play_match(self, p1, p2):
+        match = {'round': self.round_num, 'players': [p1.name, p2.name], 'winner': None, 'moves': []}
         game = Paper(p1, p2, self.width, self.height)
         while not game.winner():
-            game.take_turn()
-        if game.winner() == -1:
-            self.active_players.remove(p2)
-            self.inactive_players.append(p2)
-            return p1
+            move = {'player': game.player1.name if game.turn == game.PLAYER1 else game.player2.name, 'grid': None}
+            game.update()
+            move['grid'] = list([list(row) for row in game.grid])
+            match['moves'].append(move)
+        if game.winner() == Paper.PLAYER1:
+            winner, loser = p1, p2
         else:
-            self.active_players.remove(p1)
-            self.inactive_players.append(p1)
-            return p2
+            winner, loser = p2, p1
+        self.active_players.remove(loser)
+        self.inactive_players.append(loser)
+        match['winner'] = winner.name
+        return match
 
-    def play_round(self, r):
-        winners = []
-        for m in r:
-            winners.append(self.play_match(m))
-        return winners
+    def create_round(self):
+        num_players = len(self.active_players)
+        matches = []
+        if num_players == 1:
+            return []
+        if num_players % 2 != 0:
+            match = (self.active_players[0], self.active_players[1])
+            matches.append(match)
+        else:
+            matches = [m for m in zip(self.active_players[::2], self.active_players[1::2])]
+        return matches
 
-    def start(self):
-        winners = []
-        r = self.create_round()
-        while len(r) > 1:
-            winners.append(self.play_round(r))
-            r = self.create_round()
-        return self.rounds
+    def play_round(self, p_round):
+        self.round_num += 1
+        for n, match in enumerate(p_round):
+            result = self.play_match(match[0], match[1])
+            print(result)
+            self.save_result(result, n+1)
+
+    def save_result(self, result, match_num):
+        file_path = os.path.join(Arena.BASEDIR, self.arena_name)
+        if not os.path.exists(file_path):
+            os.makedirs(file_path)
+        file_name = 'round{0}match{1}.json'.format(result['round'], match_num)
+        file_path = os.path.join(file_path, file_name)
+        with open(file_path, 'w+') as json_file:
+            json.dump(result, json_file)
+
+
+
+
+
+
+# "round{0}match{1}.json"
+
 
 
 def main():
-    # num_players = 8
-    # players = []
-    # for i in range(num_players):
-    #     player_name = 'ai{0}'.format(i)
-    #     players.append(GenericAI(player_name))
-    # arena = Arena(players)
-    # rounds = arena.start()
-    #
-    # for n, r in enumerate(rounds):
-    #     print('round {0}:'.format(n + 1))
-    #     for match in r:
-    #         print('{0} vs. {1}'.format(match[0].name, match[1].name))
+    width = 3
+    height = 3
+    num_players = 6
+    players = []
+    for i in range(num_players):
+        name = "ai{0}".format(i)
+        players.append(GenericAI(name))
 
-
-
-    width = 5
-    height = 5
-    p1 = DestroyerOfJesse('AI1', 0)
-    p2 = DestroyerOfJesse('AI2', 0)
-    game = Paper(p1, p2, width, height)
-    while game.take_turn() is None:
-        input()
-        print(game.grid)
-
-    if game.winner() == -1:
-        print(game.player1.name)
-    else:
-        print(game.player2.name)
+    arena = Arena(players, "testing", (width, height))
+    r = arena.create_round()
+    while r:
+        arena.play_round(r)
+        r = arena.create_round()
 
 main()
