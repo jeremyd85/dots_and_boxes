@@ -33,7 +33,7 @@ class Paper(Board):
     If you want to make an AI to play this game, look at the docs for the Pencil class in pencil.py
     """
 
-    # Values
+    # Values on the grid
     PLAYER1 = -1
     PLAYER2 = 1
     WALL = 1
@@ -51,6 +51,21 @@ class Paper(Board):
         """ This function sets up the board. All initial values are zero"""
 
         self._grid = np.zeros((self.width, self.height))
+
+    def update(self):
+        """ Make a turn for the current player
+
+        :return: True if there is a move
+        """
+
+        if self.possible_moves:
+            paper_copy = self.get_copy()
+            if self.turn == -1:
+                self.draw(self.player1.play(paper_copy))
+            else:
+                self.draw(self.player2.play(paper_copy))
+            return True
+        return False
 
     def get_copy(self):
         """ Get a copy of this paper with the current player as both players
@@ -119,8 +134,7 @@ class Paper(Board):
 
         :return: a list with all possible moves
         """
-        if self.possible_moves:
-            return self.possible_moves
+
         return [(row, col) for row, col in
                 [(i // self.height, i % self.width) for i in range(self.width*self.height)]
                 if self.is_wall_spot((row, col)) and self.is_empty((row, col))]
@@ -165,21 +179,6 @@ class Paper(Board):
 
         paper_copy = self.get_copy()
         return paper_copy if paper_copy.draw(coord) else None
-
-    def take_turn(self):
-        """ Make a turn for the current player
-
-        :return: True if there is a move
-        """
-
-        if self.get_possible_moves():
-            paper_copy = self.get_copy()
-            if self.turn == -1:
-                self.draw(self.player1.play(paper_copy))
-            else:
-                self.draw(self.player2.play(paper_copy))
-            return True
-        return False
 
     def get_scores(self):
         """ Get the scores for each player

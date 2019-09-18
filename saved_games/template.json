@@ -1,0 +1,9 @@
+{
+  "players": [player1.name, player2.name],
+  "winner": player,
+  "moves": [
+    {"player":  player1.name, "grid": [[]]},
+    {"player":  player2.name, "grid": [[]]},
+    ...
+  ]
+}
