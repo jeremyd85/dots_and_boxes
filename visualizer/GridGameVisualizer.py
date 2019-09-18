@@ -106,20 +106,15 @@ class Visualizer(arcade.Window):
         """
         # ew frame based logic
         self.frame_count += 1
-        if self.frame_count % 10 == 0 and self.turn < 4:
+        if self.frame_count % 10 == 0 and self.turn < len(self.match["moves"]):
             self.turn += 1
             self.grid = self.match["moves"][self.turn-1]["grid"]
         self.fill_shape_list()
 
 
-def main():
-    """ Main method """
+if __name__ == "__main__":
     with open("test.json", "r") as read_file:
         match = json.load(read_file)
     game = Visualizer(1, 1, SCREEN_TITLE, match)
     game.fill_shape_list()
     arcade.run()
-
-
-if __name__ == "__main__":
-    main()
