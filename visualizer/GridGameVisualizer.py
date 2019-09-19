@@ -33,11 +33,7 @@ BIG_LENGTH = 30
 
 class Visualizer(arcade.Window):
     """
-    Main application class.
-
-    NOTE: Go ahead and delete the methods you don't need.
-    If you do need a method, delete the 'pass' and replace it
-    with your own code. Don't leave 'pass' in this program.
+    Visualizer Doc
     """
 
     def __init__(self, n, m, title, match=None, human=False):

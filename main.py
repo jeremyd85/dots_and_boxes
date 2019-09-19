@@ -1,12 +1,13 @@
 from players import *
 from game import Paper
+from visualizer import GridGameVisualizer
+import arcade
 import random
 import json
 import os
 
 
 class Arena:
-
     BASEDIR = 'saved_games'
 
     def __init__(self, players, arena_name, size=(7, 7)):
@@ -53,7 +54,7 @@ class Arena:
         for n, match in enumerate(p_round):
             result = self.play_match(match[0], match[1])
             print(result)
-            self.save_result(result, n+1)
+            self.save_result(result, n + 1)
 
     def save_result(self, result, match_num):
         file_path = os.path.join(Arena.BASEDIR, self.arena_name)
@@ -65,17 +66,12 @@ class Arena:
             json.dump(result, json_file)
 
 
-
-
-
-
 # "round{0}match{1}.json"
 
 
-
-def main():
-    width = 3
-    height = 3
+if __name__ == '__main__':
+    width = 4
+    height = 4
     num_players = 6
     players = []
     for i in range(num_players):
@@ -88,4 +84,12 @@ def main():
         arena.play_round(r)
         r = arena.create_round()
 
-main()
+    # may remove
+    file_path = os.path.join(Arena.BASEDIR, arena.arena_name)
+    file_path = os.path.join(file_path, "round1match1.json")
+    with open(file_path, "r") as read_file:
+        match = json.load(read_file)
+    sample_game = GridGameVisualizer.Visualizer(width, height, "round1match1", match)
+    arcade.run()
+
+
