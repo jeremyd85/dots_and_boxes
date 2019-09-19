@@ -39,9 +39,9 @@ class Paper(Board):
     WALL = 1
     BLANK = 0
 
-    def __init__(self, player1, player2, width=10, height=10):
-        super().__init__(width*2+1, height*2+1)
-        self.size = (width, height)
+    def __init__(self, player1, player2, rows=10, cols=10):
+        super().__init__(cols=rows*2+1, rows=cols*2+1)
+        self.size = (rows, cols)
         self.possible_moves = self.get_possible_moves()
         self.invalid_moves = []
         self.player1 = player1
@@ -51,7 +51,7 @@ class Paper(Board):
     def setup(self):
         """ This function sets up the board. All initial values are zero"""
 
-        self._grid = np.zeros((self.height, self.width))
+        self._grid = np.zeros((self.rows, self.cols))
 
     def update(self):
         """ Make a turn for the current player
@@ -117,8 +117,8 @@ class Paper(Board):
         :return: True if the coordinate is in bounds and an actionable spot
         """
 
-        return self.height > coord[0] >= 0 and \
-               self.width > coord[1] >= 0 and \
+        return self.rows > coord[0] >= 0 and \
+               self.cols > coord[1] >= 0 and \
                (self.is_player_spot(coord) or self.is_wall_spot(coord))
 
     def get_adjacents(self, coord):
@@ -128,7 +128,8 @@ class Paper(Board):
         :return: a list of coordinates adjacent to the coord
         """
 
-        return [tuple(i) for i in list(np.array([coord for i in range(4)]) + np.array([(0, 1), (0, -1), (1, 0), (-1, 0)])) if self.is_valid(tuple(i))]
+        return [tuple(i) for i in list(np.array(
+            [coord for i in range(4)]) + np.array([(0, 1), (0, -1), (1, 0), (-1, 0)])) if self.is_valid(tuple(i))]
 
     def get_possible_moves(self):
         """ Get all possible moves on the paper
@@ -137,7 +138,7 @@ class Paper(Board):
         """
 
         return [(row, col) for row, col in
-                [(i // self.height, i % self.width) for i in range(self.width*self.height)]
+                [(i // self.cols, i % self.cols) for i in range(self.rows*self.cols)]
                 if self.is_wall_spot((row, col)) and self.is_empty((row, col))]
 
     def get_player_spots(self):
@@ -147,7 +148,7 @@ class Paper(Board):
         """
 
         return [(row, col) for row, col in
-                [(i // self.height, i % self.width) for i in range(self.width*self.height)]
+                [(i // self.cols, i % self.cols) for i in range(self.cols*self.rows)]
                 if self.is_player_spot((row, col))]
 
     def draw(self, coord):

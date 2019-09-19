@@ -4,9 +4,9 @@ import copy
 
 class Board:
 
-    def __init__(self, width=1, height=1):
-        self.width = width
-        self.height = height
+    def __init__(self, rows=1, cols=1):
+        self.rows = rows
+        self.cols = cols
         self._grid = None
         self.setup()
 
@@ -19,7 +19,7 @@ class Board:
 
     def setup(self):
         # Make the grid state of a new game
-        self._grid = np.full((self.height, self.width), np.inf)
+        self._grid = np.full((self.rows, self.cols), np.inf)
 
     def update(self):
         pass

@@ -38,6 +38,7 @@ class Visualizer(arcade.Window):
     """
 
     def __init__(self, title, match=None, human=False, frame_rate=4):
+        # TODO I think that these values should be switched...
         self.num_cells_across = 2*match['size'][0]+1
         self.num_cells_down = 2*match['size'][1]+1
         width = 2 * OUTSIDE_MARGIN + self.index_to_offset_from_outside_margin_to_corner(self.num_cells_across)

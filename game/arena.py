@@ -13,15 +13,15 @@ class Arena:
         self.inactive_players = []
         self.rounds = []
         self.arena_name = arena_name
-        self.width = size[0]
-        self.height = size[1]
+        self.rows = size[0]
+        self.cols = size[1]
         self.round_num = 0
         random.shuffle(self.active_players)
 
     def play_match(self, p1, p2):
         match = {'round': self.round_num, 'players': [p1.name, p2.name], 'winner': None,
-                 'size': [self.width, self.height], 'moves': []}
-        game = Paper(p1, p2, self.width, self.height)
+                 'size': [self.rows, self.cols], 'moves': []}
+        game = Paper(p1, p2, self.rows, self.cols)
         while not game.winner():
             move = {'player': game.player1.name if game.turn == game.PLAYER1 else game.player2.name, 'grid': None}
             game.update()
