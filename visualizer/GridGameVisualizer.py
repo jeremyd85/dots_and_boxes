@@ -4,7 +4,8 @@ Based off arcade template
 """
 import arcade
 import json
-
+import os
+from game import Arena
 
 SCREEN_TITLE = "Vis"
 # may need to treat different kinds of cells differently
@@ -36,14 +37,15 @@ class Visualizer(arcade.Window):
     Visualizer Doc
     """
 
-    def __init__(self, n, m, title, match=None, human=False):
-        self.num_cells_across = 2*m+1
-        self.num_cells_down = 2*n+1
-        width = 2 * OUTSIDE_MARGIN + self.index_to_offset_from_outside_margin_to_corner(self.num_cells_down)
-        height = 2 * OUTSIDE_MARGIN + self.index_to_offset_from_outside_margin_to_corner(self.num_cells_across)
+    def __init__(self, title, match=None, human=False, frame_rate=4):
+        self.num_cells_across = 2*match['size'][0]+1
+        self.num_cells_down = 2*match['size'][1]+1
+        width = 2 * OUTSIDE_MARGIN + self.index_to_offset_from_outside_margin_to_corner(self.num_cells_across)
+        height = 2 * OUTSIDE_MARGIN + self.index_to_offset_from_outside_margin_to_corner(self.num_cells_down)
         super().__init__(width, height, title)
         # move to setup
 
+        self.frame_rate = frame_rate
         self.match = match
         self.turn = 0
         self.frame_count = 0
@@ -102,15 +104,24 @@ class Visualizer(arcade.Window):
         """
         # ew frame based logic
         self.frame_count += 1
-        if self.frame_count % 10 == 0 and self.turn < len(self.match["moves"]):
+        if self.frame_count % self.frame_rate == 0 and self.turn < len(self.match["moves"]):
             self.turn += 1
             self.grid = self.match["moves"][self.turn-1]["grid"]
         self.fill_shape_list()
 
 
 if __name__ == "__main__":
-    with open("test.json", "r") as read_file:
+    arena_name = 'testing'
+    arena_dir = os.path.join(Arena.BASEDIR, arena_name)
+    if not os.path.exists(arena_dir):
+        raise FileNotFoundError
+    matches = os.listdir(arena_dir)
+    # TODO support tournament in visualizer (stops after one match w/ error on close)
+    ma = matches[0]
+    match_path = os.path.join(arena_dir, ma)
+    with open(match_path, "r") as read_file:
         match = json.load(read_file)
-    game = Visualizer(1, 1, SCREEN_TITLE, match)
+    game = Visualizer(SCREEN_TITLE, match, frame_rate=1)
     game.fill_shape_list()
     arcade.run()
+    arcade.close_window()

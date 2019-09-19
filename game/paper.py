@@ -41,6 +41,7 @@ class Paper(Board):
 
     def __init__(self, player1, player2, width=10, height=10):
         super().__init__(width*2+1, height*2+1)
+        self.size = (width, height)
         self.possible_moves = self.get_possible_moves()
         self.invalid_moves = []
         self.player1 = player1
@@ -50,7 +51,7 @@ class Paper(Board):
     def setup(self):
         """ This function sets up the board. All initial values are zero"""
 
-        self._grid = np.zeros((self.width, self.height))
+        self._grid = np.zeros((self.height, self.width))
 
     def update(self):
         """ Make a turn for the current player

@@ -19,7 +19,7 @@ class Board:
 
     def setup(self):
         # Make the grid state of a new game
-        self._grid = np.full((self.width, self.height), np.inf)
+        self._grid = np.full((self.height, self.width), np.inf)
 
     def update(self):
         pass
