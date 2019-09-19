@@ -42,6 +42,6 @@ class Pencil:
         :param paper: Paper object of the paper that called this play function (is a copy)
         :return: a move as a coordinate (row, col)
         """
-        return paper.get_possible_moves()[0]
+        return paper.possible_moves[0]
 
 
