@@ -33,18 +33,14 @@ BIG_LENGTH = 30
 
 class Visualizer(arcade.Window):
     """
-    Main application class.
-
-    NOTE: Go ahead and delete the methods you don't need.
-    If you do need a method, delete the 'pass' and replace it
-    with your own code. Don't leave 'pass' in this program.
+    Visualizer Doc
     """
 
     def __init__(self, n, m, title, match=None, human=False):
         self.num_cells_across = 2*m+1
         self.num_cells_down = 2*n+1
-        width = 2 * OUTSIDE_MARGIN + self.index_to_offset_from_outside_margin_to_corner(self.num_cells_across)
-        height = 2 * OUTSIDE_MARGIN + self.index_to_offset_from_outside_margin_to_corner(self.num_cells_down)
+        width = 2 * OUTSIDE_MARGIN + self.index_to_offset_from_outside_margin_to_corner(self.num_cells_down)
+        height = 2 * OUTSIDE_MARGIN + self.index_to_offset_from_outside_margin_to_corner(self.num_cells_across)
         super().__init__(width, height, title)
         # move to setup
 
