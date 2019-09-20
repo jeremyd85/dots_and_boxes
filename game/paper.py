@@ -40,7 +40,7 @@ class Paper(Board):
     BLANK = 0
 
     def __init__(self, player1, player2, rows=10, cols=10):
-        super().__init__(cols=rows*2+1, rows=cols*2+1)
+        super().__init__(rows*2+1, cols*2+1)
         self.size = (rows, cols)
         self.possible_moves = self.get_possible_moves()
         self.invalid_moves = []
@@ -129,7 +129,7 @@ class Paper(Board):
         """
 
         return [tuple(i) for i in list(np.array(
-            [coord for i in range(4)]) + np.array([(0, 1), (0, -1), (1, 0), (-1, 0)])) if self.is_valid(tuple(i))]
+            [coord for _ in range(4)]) + np.array([(0, 1), (0, -1), (1, 0), (-1, 0)])) if self.is_valid(tuple(i))]
 
     def get_possible_moves(self):
         """ Get all possible moves on the paper
@@ -211,12 +211,3 @@ class Paper(Board):
             return Paper.PLAYER2
         else:
             return None
-
-
-
-
-
-
-
-
-
