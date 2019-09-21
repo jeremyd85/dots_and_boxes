@@ -6,8 +6,8 @@ import os
 from game import Arena
 
 if __name__ == '__main__':
-    rows = 3
-    cols = 4
+    rows = 10
+    cols = 10
     players = [Brute("Jeremy"), Brute('Steve')]
 
     arena = Arena(players, "testing", (rows, cols))

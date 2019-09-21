@@ -185,16 +185,16 @@ class Paper(Board):
     def get_scores(self):
         """ Get the scores for each player
 
-        :return: dictionary of each player's score and the total number of players
+        :return: dictionary of each player's score
         """
 
         player_spots = self.get_player_spots()
-        scores = {'player1': 0, 'player2': 0, 'total': len(player_spots)}
+        scores = {1: 0, -1: 0}
         for player_spot in player_spots:
             if self._grid[player_spot] == Paper.PLAYER1:
-                scores['player1'] += 1
+                scores[Paper.PLAYER1] += 1
             elif self._grid[player_spot] == Paper.PLAYER2:
-                scores['player2'] += 1
+                scores[Paper.PLAYER2] += 1
         return scores
 
     def winner(self):
@@ -204,10 +204,10 @@ class Paper(Board):
         """
 
         scores = self.get_scores()
-        winning_score = scores['total'] // 2 + 1
-        if scores['player1'] >= winning_score:
+        winning_score = (self.size[0] * self.size[1]) // 2 + 1
+        if scores[Paper.PLAYER1] >= winning_score:
             return Paper.PLAYER1
-        elif scores['player2'] >= winning_score:
+        elif scores[Paper.PLAYER2] >= winning_score:
             return Paper.PLAYER2
         else:
             return None
