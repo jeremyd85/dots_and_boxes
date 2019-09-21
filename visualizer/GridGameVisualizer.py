@@ -12,7 +12,7 @@ SCREEN_TITLE = "Vis"
 STATE_TO_COLOR = {-1: arcade.color.RED,
                   0: arcade.color.WHITE,
                   1: arcade.color.BLUE}
-"""
+""",
                   2: arcade.color.GREEN,
                   3: arcade.color.BLUE,
                   4: arcade.color.PURPLE,
@@ -38,9 +38,8 @@ class Visualizer(arcade.Window):
     """
 
     def __init__(self, title, match=None, human=False, frame_rate=4):
-        # TODO I think that these values should be switched...
-        self.num_cells_across = 2*match['size'][0]+1
-        self.num_cells_down = 2*match['size'][1]+1
+        self.num_cells_down = 2 * match['size'][0] + 1
+        self.num_cells_across = 2 * match['size'][1] + 1
         width = 2 * OUTSIDE_MARGIN + self.index_to_offset_from_outside_margin_to_corner(self.num_cells_across)
         height = 2 * OUTSIDE_MARGIN + self.index_to_offset_from_outside_margin_to_corner(self.num_cells_down)
         super().__init__(width, height, title)
@@ -56,8 +55,8 @@ class Visualizer(arcade.Window):
                      for _ in range(self.num_cells_down)]
         # could remove and just calc as needed
         self.cell_position = [[tuple(map(self.index_to_offset_from_outside_margin_to_corner, (x, y)))
-                               for y in range(self.num_cells_across)]
-                              for x in range(self.num_cells_down)]
+                               for x in range(self.num_cells_across)]
+                              for y in range(self.num_cells_down)]
         self.cell_size = None
         self.fill_shape_list()
 
@@ -69,8 +68,8 @@ class Visualizer(arcade.Window):
             for column in range(self.num_cells_across):
                 color = STATE_TO_COLOR[self.grid[row][column]]
                 # using two different styles to do two similar things, should choose one style?
-                width, height = self.index_to_length(row), self.index_to_length(column)
-                # width, height = height, width
+                height, width = self.index_to_length(row), self.index_to_length(column)
+
                 x, y = self.cell_position[row][column]
                 x, y = x + OUTSIDE_MARGIN, y + OUTSIDE_MARGIN
                 current_rect = arcade.create_rectangle_filled(x+(width//2), y+(height//2), width, height, color)
