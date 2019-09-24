@@ -20,6 +20,7 @@ if __name__ == '__main__':
     with open(file_path, "r") as read_file:
         match = json.load(read_file)
     sample_game = Visualizer("round1match1", match, frame_rate=1)
+    # print(len(sample_game.match["moves"]))
     arcade.run()
 
 
