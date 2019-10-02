@@ -1,6 +1,7 @@
 from generic_game import Board
 import numpy as np
 import copy
+from multiprocessing import Process
 
 
 class Paper(Board):
