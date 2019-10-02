@@ -45,14 +45,6 @@ class BruteV3(Pencil):
             wall_counts.append(sum([paper[wall] for wall in walls]))
         return max(wall_counts)
 
-    def get_score(self, paper):
-        p_score = paper.get_scores()
-        t = (paper.size[0] * paper.size[1])
-        w = t // 2 + 1
-        p = p_score[paper.turn]
-        o = p_score[paper.turn*-1]
-        return ((p + 1) / (o + 1))
-
     def get_two_path(self, paper, player_spot, prev_player_spot=None, path=None):
         if not path:
             path = []
@@ -77,9 +69,6 @@ class BruteV3(Pencil):
         for gap in gaps:
             if gap in path:
                 gap_count += 1
-
-
-
 
     def can_add_path(self, paper, player_spot, paths):
         player_walls = paper.get_adjacents(player_spot)
