@@ -1,6 +1,7 @@
 from generic_game import Board
 import numpy as np
 import copy
+import random
 from multiprocessing import Process
 
 
@@ -25,7 +26,7 @@ class Paper(Board):
         ^ That would make a 7 x 7 game with player1 and player2 as base Pencil objects.
 
             while not paper.winner():
-                paper.take_turn()
+                paper.update()
                 print(paper.grid)
 
         ^ This will now start a loop that will continually take a turn until there is
@@ -210,5 +211,7 @@ class Paper(Board):
             return Paper.PLAYER1
         elif scores[Paper.PLAYER2] >= winning_score:
             return Paper.PLAYER2
+        elif not self.possible_moves and scores[Paper.PLAYER1] == scores[Paper.PLAYER2]:
+            return random.choice([Paper.PLAYER1, Paper.PLAYER2])
         else:
             return None
