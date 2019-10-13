@@ -7,11 +7,11 @@ import os
 from game import Arena
 
 if __name__ == '__main__':
-    rows = 4
-    cols = 5
+    rows = 7
+    cols = 7
     players = [NNAI('NN0', n=rows, m=cols), NNAI('NN1', n=rows, m=cols)]
-    players = [Brute('B'), NNAI('NN1', n=rows, m=cols)]
-    players = players[::-1]
+    players = [GenericAI('1_generic'), NNAI('-1_nn', n=rows, m=cols, exploration_turns=3)]
+    # players = players[::-1]
 
     # players = [Brute('Brute0'), Brute('Brute1')]
 
@@ -24,7 +24,7 @@ if __name__ == '__main__':
     file_path = os.path.join(file_path, "round1match1.json")
     with open(file_path, "r") as read_file:
         match = json.load(read_file)
-    sample_game = Visualizer("round1match1", match, frame_rate=1)
+    sample_game = Visualizer("round1match1", match, frame_rate=8)
     # print(len(sample_game.match["moves"]))
     arcade.run()
 

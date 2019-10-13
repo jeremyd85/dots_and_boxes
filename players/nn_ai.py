@@ -42,16 +42,20 @@ class Network(nn.Module):
 
 
 class NNAI(Pencil):
-    def __init__(self, name, network=None, n=3, m=3, explore=False):
+    def __init__(self, name, network=None, n=3, m=3, exploration_turns=0):
         super().__init__(name)
         # self.network = network if network is not None else Network(n, m)
         self.network = Network(n,m)
         self.player_id = None  # may not be the correct way to do this
+        self.exploration_turns = exploration_turns
 
     def play(self, paper):
+        if self.exploration_turns > 0:
+            self.exploration_turns -= 1
+            return random.choice(paper.possible_moves)
         max_val = -2
         best_move = None
-        for move in paper.get_possible_moves():
+        for move in paper.possible_moves:
             next_state = paper.get_draw_state(move)
             # TODO _grid reference?
             next_state = torch.Tensor(next_state._grid)
