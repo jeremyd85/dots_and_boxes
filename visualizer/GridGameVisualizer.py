@@ -48,6 +48,7 @@ class Visualizer(arcade.Window):
         self.frame_rate = frame_rate
         self.match = match
         self.turn = 0
+        self.current_player = self.match["moves"][self.turn]['player']
         self.frame_count = 0
         self.update_rate = 120
         self.shape_list = None
@@ -92,7 +93,9 @@ class Visualizer(arcade.Window):
         # This command should happen before we start drawing. It will clear
         # the screen to the background color, and erase what we drew last frame.
         arcade.start_render()
-
+        arcade.draw_text(self.current_player,
+                         OUTSIDE_MARGIN // 2, OUTSIDE_MARGIN // 2, arcade.color.BLACK, 14, width=200, align="center",
+                         anchor_x="center", anchor_y="center")
         # Call draw() on all your sprite lists below
         self.shape_list.draw()
 
@@ -105,14 +108,19 @@ class Visualizer(arcade.Window):
         # ew frame based logic
         self.frame_count += 1
         if self.frame_count % self.frame_rate == 0 and self.turn < len(self.match["moves"]):
+            self.grid = self.match["moves"][self.turn]["grid"]
+            self.current_player = self.match["moves"][self.turn]['player']
             self.turn += 1
-            self.grid = self.match["moves"][self.turn-1]["grid"]
         self.fill_shape_list()
 
 
 if __name__ == "__main__":
     arena_name = 'testing'
-    arena_dir = os.path.join(Arena.BASEDIR, arena_name)
+    curr_dir = os.path.dirname(os.path.realpath(__file__))
+    par_dir = os.path.dirname(curr_dir)
+    arena_dir = os.path.join(par_dir, Arena.BASEDIR)
+    arena_dir = os.path.join(arena_dir, arena_name)
+    # arena_dir = os.path.join(arena_dir, "round1match1.json")
     if not os.path.exists(arena_dir):
         raise FileNotFoundError
     matches = os.listdir(arena_dir)
