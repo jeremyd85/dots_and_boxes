@@ -56,8 +56,10 @@ class NNAI(Pencil):
             # TODO _grid reference?
             next_state = torch.Tensor(next_state._grid)
             # find best value of all moves from perspective of current player
-            val = self.network(next_state)
-            if (paper.turn * val) > max_val:
+            canon_val = self.network(next_state).item()
+            val = paper.turn * canon_val
+            # print(canon_val, max_val, val > max_val, paper.turn)
+            if val > max_val:
                 max_val = val
                 best_move = move
         return best_move
