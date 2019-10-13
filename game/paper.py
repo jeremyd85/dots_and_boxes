@@ -200,7 +200,7 @@ class Paper(Board):
     def winner(self, early_exit=True):
         """ Get the player ID of the player that won if there is one
 
-        :return: player ID of a player that won, None if there is no winner
+        :return: player ID of a player that won, 0 if there is a tie, None if there is no winner
         """
         # ties are not properly handled
         scores = self.get_scores()
@@ -209,6 +209,8 @@ class Paper(Board):
             return Paper.PLAYER1
         elif scores['player2'] >= winning_score and early_exit:
             return Paper.PLAYER2
+        elif scores['player1'] == scores['player2'] == (winning_score-1):
+            return 0
         elif early_exit:
             return None
         elif not self.get_possible_moves():

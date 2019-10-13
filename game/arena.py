@@ -22,7 +22,7 @@ class Arena:
         match = {'round': self.round_num, 'players': [p1.name, p2.name], 'winner': None,
                  'size': [self.rows, self.cols], 'moves': []}
         game = Paper(p1, p2, self.rows, self.cols)
-        while not game.winner():
+        while game.winner() is None:
             move = {'player': game.player1.name if game.turn == game.PLAYER1 else game.player2.name, 'grid': None}
             game.update()
             move['grid'] = list([list(row) for row in game.grid])
