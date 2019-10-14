@@ -30,5 +30,15 @@ class DataGenArena:
             game_state_flip270 = np.flip(game_state270, 0)
             game_states.extend((game_state, game_state90, game_state180, game_state270,
                                 game_state_flip, game_state_flip90, game_state_flip180, game_state_flip270))
+        if self.shuffle:
+            random.shuffle(game_states)
         game_states = np.stack(game_states)
         game_results = [game.winner()]*len(game_states)
+        return game_states, game_results
+
+    def play_matches(self, p1, p2, matches=100):
+        game_states, game_results = self.play_match(p1, p2)
+        for _ in range(1, matches):
+            gs, gr = self.play_match(p1, p2)
+            game_states, game_results = np.concatenate((game_states, gs)), game_results + gr
+        return game_states, game_results
