@@ -1,20 +1,29 @@
 from game import Paper
+import torch
+from torch.autograd import Variable
+from torch.utils.data import Dataset, DataLoader
 import numpy as np
 import random
 import os
+
+from players.nn_ai import NNAI
 
 
 class DataGenArena:
     BASEDIR = 'player_files'
 
-    def __init__(self, players, arena_name, size=(7, 7)):
-        self.players = players
+    def __init__(self, player, arena_name, size=(7, 7)):
+        self.player = player
         self.arena_name = arena_name
         self.rows = size[0]
         self.cols = size[1]
         self.round_num = 0
         self.max_game_len = 2*self.rows*self.cols + self.rows + self.cols
-        self.shuffle = True  # might not be the best way
+        self.shuffle = True  # might not be the best way or necc
+        print()
+
+    def __getitem__(self, item):
+        pass
 
     def play_match(self, p1, p2):
         game = Paper(p1, p2, self.rows, self.cols)
@@ -30,15 +39,36 @@ class DataGenArena:
             game_state_flip270 = np.flip(game_state270, 0)
             game_states.extend((game_state, game_state90, game_state180, game_state270,
                                 game_state_flip, game_state_flip90, game_state_flip180, game_state_flip270))
+            game.update()
+
         if self.shuffle:
             random.shuffle(game_states)
+        pad_len = 8*self.max_game_len - len(game_states)
+        pad = random.sample(game_states, pad_len)
+        game_states.extend(pad)
+        print(len(game_states))
         game_states = np.stack(game_states)
         game_results = [game.winner()]*len(game_states)
         return game_states, game_results
 
     def play_matches(self, p1, p2, matches=100):
+        print("start")
         game_states, game_results = self.play_match(p1, p2)
-        for _ in range(1, matches):
+        for i in range(1, matches):
+            print('game', i)
             gs, gr = self.play_match(p1, p2)
             game_states, game_results = np.concatenate((game_states, gs)), game_results + gr
         return game_states, game_results
+
+
+if __name__ == '__main__':
+    size = 5, 5
+    nm = (2*size[0]+1) * (2*size[1]+1)
+    player = NNAI("NN", None, size[0], size[1], 3)
+    A = DataGenArena(player, "test_data_gen", size)
+    gs, gr = A.play_matches(player, player, 10)
+    print(len(gs), len(gr))
+    print(type(gs), type(gr))
+    print(sum(gr))
+    gs = np.reshape(gs, (len(gs), nm))
+    print(gs.shape)
