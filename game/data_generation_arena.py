@@ -5,6 +5,7 @@ from torch.utils.data import Dataset, DataLoader
 import numpy as np
 import random
 import multiprocessing
+import itertools
 import os
 
 from players.nn_ai import NNAI
@@ -62,9 +63,9 @@ class DataGenArena(Dataset):
     def play_matches(self, matches=100):
         pool = multiprocessing.Pool()
         result = pool.map(self.play_match, range(matches))
-        print("start")
-        # TODO: result has game_states and game_results tangled
-        game_states, game_results = np.concatenate(result)
+        game_states, game_results = zip(*result)
+        game_states, game_results = np.concatenate(game_states), list(itertools.chain(*game_results))
+
         game_states = np.reshape(game_states, (len(game_states), self.grid_size))
         return torch.from_numpy(game_states), torch.Tensor(game_results)
 
@@ -73,8 +74,18 @@ if __name__ == '__main__':
     size = 3, 3
     nm = (2 * size[0] + 1) * (2 * size[1] + 1)
     player = NNAI("NN", None, size[0], size[1], 3)
-    dataset = DataGenArena(player, "test_data_gen", size, 10)
+    dataset = DataGenArena(player, "test_data_gen", size, 100)
     train_loader = DataLoader(dataset=dataset,
-                              batch_size=5,
+                              batch_size=100,
                               shuffle=True,
                               num_workers=2)
+    for epoch in range(2):
+        for i, data in enumerate(train_loader, 0):
+            # get the inputs
+            inputs, labels = data
+
+            # wrap them in Variable
+            inputs, labels = Variable(inputs), Variable(labels)
+
+            # Run your training process
+            print(epoch, i, "inputs", inputs.data.shape, "labels", labels.data.shape)
