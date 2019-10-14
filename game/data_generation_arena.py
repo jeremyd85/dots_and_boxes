@@ -4,11 +4,12 @@ from torch.autograd import Variable
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
 import random
+import multiprocessing
 import os
 
 from players.nn_ai import NNAI
 
-# TODO: split data generation and dataset?
+
 class DataGenArena(Dataset):
     BASEDIR = 'player_files'
 
@@ -32,7 +33,7 @@ class DataGenArena(Dataset):
     def __len__(self):
         return len(self.labels)
 
-    def play_match(self):
+    def play_match(self, *_):
         game = Paper(self.player, self.player, self.rows, self.cols)
         game_states = []
         while game.winner() is None:
@@ -53,58 +54,27 @@ class DataGenArena(Dataset):
         pad_len = 8*self.max_game_len - len(game_states)
         pad = random.sample(game_states, pad_len)
         game_states.extend(pad)
-        print(len(game_states))
         game_states = np.stack(game_states)
+        print(game_states.shape)
         game_results = [game.winner()]*len(game_states)
         return game_states, game_results
 
     def play_matches(self, matches=100):
+        pool = multiprocessing.Pool()
+        result = pool.map(self.play_match, range(matches))
         print("start")
-        game_states, game_results = self.play_match()
-        for i in range(1, matches):
-            print('game', i)
-            gs, gr = self.play_match()
-            game_states, game_results = np.concatenate((game_states, gs)), game_results + gr
+        # TODO: result has game_states and game_results tangled
+        game_states, game_results = np.concatenate(result)
         game_states = np.reshape(game_states, (len(game_states), self.grid_size))
         return torch.from_numpy(game_states), torch.Tensor(game_results)
 
 
-
-size = 5, 5
-nm = (2*size[0]+1) * (2*size[1]+1)
-player = NNAI("NN", None, size[0], size[1], 3)
-# TODO: ew ew ew why?
-data = DataGenArena(player, "test_data_gen", size, 10)
-data = data.data, data.labels
-dataset = DataGenArena(player, "test_data_gen", size, 10, data)
-print("________________________________________________________")
-train_loader = DataLoader(dataset=dataset,
-                          batch_size=5,
-                          shuffle=True,
-                          num_workers=2)
-
-for epoch in range(2):
-    for i, data in enumerate(train_loader, 0):
-        # get the inputs
-        inputs, labels = data
-
-        # wrap them in Variable
-        inputs, labels = Variable(inputs), Variable(labels)
-
-        # Run your training process
-        print(epoch, i, "inputs", inputs.data, "labels", labels.data)
-
-
 if __name__ == '__main__':
-    pass
-    # size = 5, 5
-    # nm = (2*size[0]+1) * (2*size[1]+1)
-    # player = NNAI("NN", None, size[0], size[1], 3)
-    # A = DataGenArena(player, "test_data_gen", size, 6)
-
-    """gs, gr = A.play_matches(10)
-    print(len(gs), len(gr))
-    print(type(gs), type(gr))
-    print(sum(gr))
-    gs = np.reshape(gs, (len(gs), nm))
-    print(gs.shape)"""
+    size = 3, 3
+    nm = (2 * size[0] + 1) * (2 * size[1] + 1)
+    player = NNAI("NN", None, size[0], size[1], 3)
+    dataset = DataGenArena(player, "test_data_gen", size, 10)
+    train_loader = DataLoader(dataset=dataset,
+                              batch_size=5,
+                              shuffle=True,
+                              num_workers=2)
