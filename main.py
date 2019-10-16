@@ -4,6 +4,7 @@ import arcade
 import json
 import os
 from game import Arena
+from game import Paper
 
 from timeit import default_timer as Timer
 
@@ -16,7 +17,7 @@ if __name__ == '__main__':
 
     # players = [Brute('Brute0'), Brute('Brute1')]
 
-    arena = Arena(players, "testing", (rows, cols))
+
     r = arena.create_round()
 
     # super rigorous way of testing preformance
@@ -24,6 +25,14 @@ if __name__ == '__main__':
     arena.play_round(r)
     t1 = Timer()
     print(t1 - t0)
+
+    # for i in range(100):
+    #     players = [GenericAI('player1'), GenericAI('player2')]
+    #     paper = Paper(players[0], players[1], rows, cols)
+    #     while not paper.winner():
+    #         paper.update()
+    #         # print(paper.grid)
+    #     print(paper.winner())
 
     # may remove
     file_path = os.path.join(Arena.BASEDIR, arena.arena_name)

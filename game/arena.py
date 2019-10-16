@@ -2,7 +2,7 @@ from game import Paper
 import random
 import json
 import os
-
+import sys
 
 class Arena:
 

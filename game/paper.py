@@ -1,6 +1,8 @@
 from generic_game import Board
 import numpy as np
 import copy
+import random
+from multiprocessing import Process
 
 
 class Paper(Board):
@@ -24,7 +26,7 @@ class Paper(Board):
         ^ That would make a 7 x 7 game with player1 and player2 as base Pencil objects.
 
             while not paper.winner():
-                paper.take_turn()
+                paper.update()
                 print(paper.grid)
 
         ^ This will now start a loop that will continually take a turn until there is
@@ -186,16 +188,16 @@ class Paper(Board):
     def get_scores(self):
         """ Get the scores for each player
 
-        :return: dictionary of each player's score and the total number of players
+        :return: dictionary of each player's score
         """
 
         player_spots = self.get_player_spots()
-        scores = {'player1': 0, 'player2': 0, 'total': len(player_spots)}
+        scores = {1: 0, -1: 0}
         for player_spot in player_spots:
             if self._grid[player_spot] == Paper.PLAYER1:
-                scores['player1'] += 1
+                scores[Paper.PLAYER1] += 1
             elif self._grid[player_spot] == Paper.PLAYER2:
-                scores['player2'] += 1
+                scores[Paper.PLAYER2] += 1
         return scores
 
     def winner(self, early_exit=True):
@@ -205,16 +207,12 @@ class Paper(Board):
         """
         # ties are not properly handled
         scores = self.get_scores()
-        winning_score = scores['total'] // 2 + 1
-        if scores['player1'] >= winning_score and early_exit:
+        winning_score = (self.size[0] * self.size[1]) // 2 + 1
+        if scores[Paper.PLAYER1] >= winning_score and early_exit:
             return Paper.PLAYER1
-        elif scores['player2'] >= winning_score and early_exit:
+        elif scores[Paper.PLAYER2] >= winning_score and early_exit:
             return Paper.PLAYER2
-        elif scores['player1'] == scores['player2'] == (winning_score-1):
-            return 0
-        elif early_exit:
-            return None
-        elif not self.get_possible_moves():
-            return Paper.PLAYER1 if scores['player1'] > scores['player2'] else Paper.PLAYER2
+        elif not self.possible_moves and scores[Paper.PLAYER1] == scores[Paper.PLAYER2]:
+            return random.choice([Paper.PLAYER1, Paper.PLAYER2])
         else:
             return None
