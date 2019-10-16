@@ -6,22 +6,25 @@ import os
 from game import Arena
 from game import Paper
 
+from timeit import default_timer as Timer
+
 if __name__ == '__main__':
     rows = 7
     cols = 7
-    players = []
-    for i in range(20):
-        if i % 2 == 0:
-            player = Brute("ai{0}".format(i))
-        else:
-            player = BruteV3("ai{0}".format(i))
-        players.append(player)
+    players = [NNAI('NN0', n=rows, m=cols), NNAI('NN1', n=rows, m=cols)]
+    players = [GenericAI('1_generic'), NNAI('-1_nn', n=rows, m=cols, exploration_turns=3)]
+    # players = players[::-1]
 
-    players = [BruteV3('player1'), Brute('player2')]
-    arena = Arena(players, "testing", (10, 10))
+    # players = [Brute('Brute0'), Brute('Brute1')]
+
 
     r = arena.create_round()
+
+    # super rigorous way of testing preformance
+    t0 = Timer()
     arena.play_round(r)
+    t1 = Timer()
+    print(t1 - t0)
 
     # for i in range(100):
     #     players = [GenericAI('player1'), GenericAI('player2')]
@@ -36,7 +39,8 @@ if __name__ == '__main__':
     file_path = os.path.join(file_path, "round1match1.json")
     with open(file_path, "r") as read_file:
         match = json.load(read_file)
-    sample_game = Visualizer("round1match1", match, frame_rate=1)
+    sample_game = Visualizer("round1match1", match, frame_rate=8)
+    # print(len(sample_game.match["moves"]))
     arcade.run()
 
 

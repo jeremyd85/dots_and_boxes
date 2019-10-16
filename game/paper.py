@@ -76,6 +76,7 @@ class Paper(Board):
         :return: A deepcopy of this paper
         """
 
+        # print(self.__dict__)  # paper holds an NNAI object and will call NNAI.__deepcopy__()
         paper_copy = copy.deepcopy(self)
         if self.turn == Paper.PLAYER1:
             paper_copy.player2 = copy.deepcopy(paper_copy.player1)
@@ -199,17 +200,17 @@ class Paper(Board):
                 scores[Paper.PLAYER2] += 1
         return scores
 
-    def winner(self):
+    def winner(self, early_exit=True):
         """ Get the player ID of the player that won if there is one
 
-        :return: player ID of a player that won, None if there is no winner
+        :return: player ID of a player that won, 0 if there is a tie, None if there is no winner
         """
-
+        # ties are not properly handled
         scores = self.get_scores()
         winning_score = (self.size[0] * self.size[1]) // 2 + 1
-        if scores[Paper.PLAYER1] >= winning_score:
+        if scores[Paper.PLAYER1] >= winning_score and early_exit:
             return Paper.PLAYER1
-        elif scores[Paper.PLAYER2] >= winning_score:
+        elif scores[Paper.PLAYER2] >= winning_score and early_exit:
             return Paper.PLAYER2
         elif not self.possible_moves and scores[Paper.PLAYER1] == scores[Paper.PLAYER2]:
             return random.choice([Paper.PLAYER1, Paper.PLAYER2])
