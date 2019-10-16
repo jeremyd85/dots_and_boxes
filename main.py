@@ -1,10 +1,11 @@
 from players import *
-from players.nn_ai import NNAI
 from visualizer import Visualizer
 import arcade
 import json
 import os
 from game import Arena
+
+from timeit import default_timer as Timer
 
 if __name__ == '__main__':
     rows = 7
@@ -17,7 +18,12 @@ if __name__ == '__main__':
 
     arena = Arena(players, "testing", (rows, cols))
     r = arena.create_round()
+
+    # super rigorous way of testing preformance
+    t0 = Timer()
     arena.play_round(r)
+    t1 = Timer()
+    print(t1 - t0)
 
     # may remove
     file_path = os.path.join(Arena.BASEDIR, arena.arena_name)

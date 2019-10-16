@@ -8,6 +8,9 @@ import json
 from game import Pencil
 import random
 
+# I need to learn more about profiling properly
+from timeit import default_timer as Timer
+
 
 def flatten(t):
     t = t.reshape(1, -1)
@@ -45,28 +48,27 @@ class NNAI(Pencil):
     def __init__(self, name, network=None, n=3, m=3, exploration_turns=0):
         super().__init__(name)
         # self.network = network if network is not None else Network(n, m)
-        self.network = Network(n,m)
+        self.network = Network(n, m)
         self.player_id = None  # may not be the correct way to do this
         self.exploration_turns = exploration_turns
 
+    def _evaluate(self, move, paper):
+        next_state = paper.get_draw_state(move)
+        # TODO _grid reference?
+        next_state = torch.Tensor(next_state._grid)
+        # find best value of all moves from perspective of first player
+        canon_val = self.network(next_state).item()
+        return paper.turn * canon_val
+
     def play(self, paper):
+        moves = paper.possible_moves
         if self.exploration_turns > 0:
             self.exploration_turns -= 1
-            return random.choice(paper.possible_moves)
-        max_val = -2
-        best_move = None
-        for move in paper.possible_moves:
-            next_state = paper.get_draw_state(move)
-            # TODO _grid reference?
-            next_state = torch.Tensor(next_state._grid)
-            # find best value of all moves from perspective of current player
-            canon_val = self.network(next_state).item()
-            val = paper.turn * canon_val
-            # print(canon_val, max_val, val > max_val, paper.turn)
-            if val > max_val:
-                max_val = val
-                best_move = move
-        return best_move
+            return random.choice(moves)
+        # prepare for possible parallelization
+        move_vals = [self._evaluate(move, paper) for move in moves]
+        best_index = move_vals.index(max(move_vals))
+        return moves[best_index]
 
 
 if __name__ == '__main__':

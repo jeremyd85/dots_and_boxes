@@ -63,6 +63,9 @@ class DataGenArena(Dataset):
     def play_matches(self, matches=100):
         pool = multiprocessing.Pool()
         result = pool.map(self.play_match, range(matches))
+        pool.close()
+        pool.join()
+
         game_states, game_results = zip(*result)
         game_states, game_results = np.concatenate(game_states), list(itertools.chain(*game_results))
 
@@ -88,4 +91,4 @@ if __name__ == '__main__':
             inputs, labels = Variable(inputs), Variable(labels)
 
             # Run your training process
-            print(epoch, i, "inputs", inputs.data.shape, "labels", labels.data.shape)
+            print(epoch, i, "inputs", inputs.data.shape, "labels", labels.data[:3])
