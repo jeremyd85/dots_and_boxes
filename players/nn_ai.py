@@ -10,6 +10,8 @@ import random
 
 # I need to learn more about profiling properly
 from timeit import default_timer as Timer
+import functools
+import multiprocessing
 
 
 def flatten(t):
@@ -51,6 +53,8 @@ class NNAI(Pencil):
         self.network = Network(n, m)
         self.player_id = None  # may not be the correct way to do this
         self.exploration_turns = exploration_turns
+        # self.pool = multiprocessing.Pool()
+        # investigate overriding __deepcopy__, __getstate__, __setstate__
 
     def _evaluate(self, move, paper):
         next_state = paper.get_draw_state(move)
@@ -65,9 +69,21 @@ class NNAI(Pencil):
         if self.exploration_turns > 0:
             self.exploration_turns -= 1
             return random.choice(moves)
+        # super rigorous way of testing preformance
+        # t0 = Timer()
         # prepare for possible parallelization
+        # self.pool.close()
+        # self.pool.join()
+        # move_vals = self.pool.map(functools.partial(self._evaluate, paper=paper), moves)
+        # https://stackoverflow.com/questions/25382455/python-notimplementederror-pool-objects-cannot-be-passed-between-processes
+        # move_vals = list(map(functools.partial(self._evaluate, paper=paper), moves))
+        # t1 = Timer()
         move_vals = [self._evaluate(move, paper) for move in moves]
+
+        # print(len(move_vals))
         best_index = move_vals.index(max(move_vals))
+        # t2 = Timer()
+        # print(t1 - t0, t2-t1)
         return moves[best_index]
 
 

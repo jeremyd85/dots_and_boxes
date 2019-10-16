@@ -74,6 +74,7 @@ class Paper(Board):
         :return: A deepcopy of this paper
         """
 
+        # print(self.__dict__)  # paper holds an NNAI object and will call NNAI.__deepcopy__()
         paper_copy = copy.deepcopy(self)
         if self.turn == Paper.PLAYER1:
             paper_copy.player2 = copy.deepcopy(paper_copy.player1)
